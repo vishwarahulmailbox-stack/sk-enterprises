@@ -1,50 +1,53 @@
-# S K Enterprises Website - Cloudflare Deployment Guide
+# S K Enterprises — Website
 
-This guide provides step-by-step instructions to upload the S K Enterprises website to Cloudflare Pages.
+A ground-up rebuild of the S K Enterprises marketing site. No Mobirise, no Bootstrap, no third-party builder — plain, hand-written HTML/CSS/JS that you fully own and can edit directly.
 
-## Pre-deployment Modifications Required
+## What's in here
 
-### 1. Replace Mobirise Website Builder References
-
-**Find and replace:**
-- From: `Mobirise Website Builder`
-- To: `S K Enterprises`
-
-### 2.  Replace the URL
-
-**Find and replace:**
-- From: `https://mobiri.se/2177381` To: `https://skenterprises.work/`
-- mobirise.com replace with skenterprises.work
-- Replace Best AI Website Maker to "S K Enterprises"
-- in script.js edit last line, find innerHTML and fix it
-
-### 3. Replace form tag section in index.html with below form
-
-```html
-    <form action="https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK000005ZWoX" method="POST" class="mbr-form form-with-styler" data-form-title="Form Name">
-        
-                    <input type=hidden name="oid" value="00DgK000005ZWoX">
-                    <input type=hidden name="retURL" value="https://skenterprises.work/thank-you">
-
-                    <div class="dragArea row">
-                        <div class="col-md col-sm-12 form-group mb-3" data-for="name">
-                            <input type="text" name="last_name" placeholder="Name" data-form-field="name" class="form-control" id="last_name" maxlength="80">
-                        </div>
-                        <div class="col-md col-sm-12 form-group mb-3" data-for="email">
-                            <input type="email" name="email" placeholder="Email" data-form-field="email" class="form-control" value="" id="email" maxlength="80">
-                        </div>
-                        <div class="col-12 form-group mb-3" data-for="phone">
-                            <input type="tel" name="phone" placeholder="Phone" data-form-field="phone" class="form-control" value="" id="phone" maxlength="20">
-                        </div>
-                        <div class="col-12 form-group mb-3" data-for="textarea">
-                            <textarea  id="00NgK000017oQXR" name="00NgK000017oQXR" type="text" wrap="soft" data-form-field="textarea" class="form-control" placeholder="Message"></textarea>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 align-center mbr-section-btn"><button type="submit" class="btn btn-primary display-7">Send message</button></div>
-                    </div>
-                </form>
+```
+index.html          Full one-page site: hero, about, services, projects, why us, team, testimonials, contact
+thank-you.html       Redirect target after the contact form is submitted
+assets/css/main.css  Entire design system (colors, type, layout, components)
+assets/js/main.js    Sticky nav, mobile menu, scroll reveal, project filter, testimonial scroller
+assets/images/       Photos used on the site, resized and compressed for the web (18MB → 1.2MB total)
 ```
 
-### Contact Information:
-- **Email:** business@skenterprises.work
-- **Phone:** +91 9870 200076
-- **WhatsApp:** +91 9820 801306
+## Design
+
+- **Type:** Fraunces (headlines), Inter (body text), JetBrains Mono (every number — sq ft, years, phone, stats), loaded from Google Fonts.
+- **Color:** warm espresso ink, plaster/stone background, brass and deep teal accents (teal pulled from your existing logo mark).
+- **Signature detail:** the corner-bracket "spec frame" around key photos and the dimension-tick marquee strip — a nod to floor plans and space planning, which is literally one of your services.
+- Fully responsive (mobile nav collapses to a hamburger menu below ~860px), keyboard-focus visible on all interactive elements, and respects `prefers-reduced-motion`.
+
+## Content
+
+All copy (about, services, why-us, team, testimonials, contact details) is carried over from your original site — nothing invented. Testimonials were lightly cleaned up (emoji removed) to match the more editorial tone; the underlying quotes and names are unchanged.
+
+Project photos are grouped into a filterable gallery (All / 2 BHK / 3 BHK / 4 BHK / Penthouse / Lobby) instead of five separate near-empty pages — easier to browse, and easier for you to maintain going forward.
+
+## Contact form
+
+Unchanged from before — POSTs directly to your existing Salesforce Web-to-Lead endpoint (`orgId 00DgK000005ZWoX`), no JavaScript library required, redirects to `thank-you.html` on submit.
+
+## Deploying
+
+Static site, no build step:
+
+1. Upload the whole folder (keeping `index.html` and `assets/` as siblings) to Cloudflare Pages, or any static host.
+2. Build command: none. Output directory: `/` (project root).
+
+## Testing locally
+
+Don't open `index.html` by double-clicking it from inside a zip — extract fully first, or better, run a local server from this folder:
+
+```
+python3 -m http.server 8000
+```
+
+then open `http://localhost:8000` in your browser.
+
+## Changing content later
+
+- **Text:** edit directly inside `index.html` — it's plain HTML, organized into clearly commented sections (`<!-- ============ Hero ============ -->` etc.).
+- **Colors/fonts:** all defined once at the top of `assets/css/main.css` under `:root` — change a value there and it updates everywhere.
+- **Adding a project photo:** drop the image into `assets/images/`, then copy an existing `.project-item` block in the Projects section and update the `src`, `alt`, `data-category`, and `.project-tag` text.
