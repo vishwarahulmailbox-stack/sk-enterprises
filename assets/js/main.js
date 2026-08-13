@@ -71,6 +71,88 @@
     });
   });
 
+  /* ---------- project lightbox ---------- */
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightbox-img");
+  var lightboxCaption = document.getElementById("lightbox-caption");
+  var lightboxClose = document.getElementById("lightbox-close");
+  var lightboxPrev = document.getElementById("lightbox-prev");
+  var lightboxNext = document.getElementById("lightbox-next");
+  var currentIndex = -1;
+
+  function visibleItems() {
+    return Array.prototype.filter.call(projectItems, function (item) {
+      return !item.hidden;
+    });
+  }
+
+  function showAt(index) {
+    var items = visibleItems();
+    if (!items.length) return;
+    currentIndex = (index + items.length) % items.length;
+    var item = items[currentIndex];
+    var img = item.querySelector("img");
+    var tag = item.querySelector(".project-tag");
+    lightboxImg.src = img.src;
+    lightboxImg.alt = img.alt;
+    lightboxCaption.textContent = tag ? tag.textContent : "";
+  }
+
+  function openLightbox(item) {
+    var items = visibleItems();
+    var index = items.indexOf(item);
+    showAt(index === -1 ? 0 : index);
+    lightbox.classList.add("is-open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  projectItems.forEach(function (item) {
+    item.addEventListener("click", function () {
+      openLightbox(item);
+    });
+  });
+
+  if (lightboxClose) {
+    lightboxClose.addEventListener("click", closeLightbox);
+  }
+  if (lightboxPrev) {
+    lightboxPrev.addEventListener("click", function () {
+      showAt(currentIndex - 1);
+    });
+  }
+  if (lightboxNext) {
+    lightboxNext.addEventListener("click", function () {
+      showAt(currentIndex + 1);
+    });
+  }
+  if (lightbox) {
+    lightbox.addEventListener("click", function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (!lightbox.classList.contains("is-open")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showAt(currentIndex - 1);
+      if (e.key === "ArrowRight") showAt(currentIndex + 1);
+    });
+  }
+
+  /* also re-point lightbox navigation when the active filter changes */
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (lightbox.classList.contains("is-open")) {
+        closeLightbox();
+      }
+    });
+  });
+
   /* ---------- testimonial carousel controls ---------- */
   var testiTrack = document.querySelector(".testi-track");
   var prevBtn = document.querySelector(".testi-prev");
