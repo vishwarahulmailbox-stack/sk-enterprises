@@ -523,13 +523,23 @@ section {
 
 .about-grid {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: 0.85fr 1.15fr;
   gap: clamp(1.75rem, 4vw, 3.5rem);
-  align-items: center;
+  align-items: stretch;
 }
 
 .about-media .spec-frame {
-  aspect-ratio: 4 / 3.1;
+  height: 100%;
+}
+
+.about-media .spec-frame__media {
+  height: 100%;
+}
+
+.about-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .about-body p {
@@ -549,7 +559,7 @@ section {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-top: 2rem;
+  margin-top: 1.4rem;
   padding-top: 1.6rem;
   border-top: 1px solid var(--line);
 }
@@ -579,11 +589,8 @@ section {
   font-family: var(--font-mono);
 }
 
-/* ==========================================================================
-   Services
-   ========================================================================== */
-
-.services-grid {
+.sector-list {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
@@ -591,8 +598,153 @@ section {
   border: 1px solid var(--line-strong);
 }
 
-.service-card {
+.sector-list li {
   background: var(--paper);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.9rem 1.7rem;
+}
+
+.sector-list .mono {
+  font-size: 0.75rem;
+  color: var(--brass-text);
+  flex-shrink: 0;
+}
+
+.sector-list strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.sector-list span {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Mission & Vision
+   ========================================================================== */
+
+.mission {
+  background: var(--stone);
+  padding-top: 0;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: start;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(3rem, 6vw, 5rem);
+}
+
+.mission-grid h2 {
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  margin: 0.8rem 0 1rem;
+}
+
+.mission-grid > div:first-child p {
+  color: var(--ink-soft);
+  max-width: 32ch;
+}
+
+.mission-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line-strong);
+  border: 1px solid var(--line-strong);
+}
+
+.mission-card {
+  background: var(--paper);
+  padding: 1.9rem clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.mission-card h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.7rem;
+}
+
+.mission-card p {
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+}
+
+/* ==========================================================================
+   Goals
+   ========================================================================== */
+
+#goals {
+  background: var(--paper);
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line-strong);
+  border: 1px solid var(--line-strong);
+}
+
+.goal-card {
+  background: var(--paper);
+  padding: 2.1rem 1.9rem;
+}
+
+.goal-num {
+  font-size: 0.75rem;
+  color: var(--brass-text);
+  display: block;
+  margin-bottom: 1.2rem;
+}
+
+.goal-card h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin-bottom: 0.7rem;
+  line-height: 1.3;
+}
+
+.goal-card p {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+/* ==========================================================================
+   Services
+   ========================================================================== */
+
+.services-track-wrap {
+  overflow: hidden;
+}
+
+.services-track {
+  display: flex;
+  gap: 1.1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.6rem;
+  scrollbar-width: none;
+}
+
+.services-track::-webkit-scrollbar {
+  display: none;
+}
+
+.service-card {
+  scroll-snap-align: start;
+  flex: 0 0 min(320px, 78vw);
+  background: var(--paper);
+  border: 1px solid var(--line);
   padding: 0 0 1.9rem;
   display: flex;
   flex-direction: column;
@@ -643,6 +795,30 @@ section {
 .service-card p {
   color: var(--ink-soft);
   font-size: 0.94rem;
+}
+
+.services-controls {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 1.8rem;
+}
+
+.services-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.services-controls button:hover {
+  background: var(--teal-deep);
+  border-color: var(--teal-deep);
+  color: var(--paper);
 }
 
 /* ==========================================================================
@@ -777,6 +953,32 @@ section {
 .project-item:hover .project-expand {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
+}
+
+.ongoing {
+  background: var(--stone);
+}
+
+.ongoing-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem 2rem;
+}
+
+.ongoing-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.94rem;
+}
+
+.ongoing-list li .mono {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -954,14 +1156,14 @@ section {
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.6rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
 }
 
 .team-card {
   background: var(--paper);
   border: 1px solid var(--line);
-  padding: 2.1rem 1.8rem;
+  padding: 2rem 1.6rem;
   text-align: left;
 }
 
@@ -977,25 +1179,32 @@ section {
   font-family: var(--font-display);
   font-size: 1.2rem;
   margin-bottom: 1.4rem;
+  overflow: hidden;
 }
 
-.team-card:nth-child(2) .team-avatar {
-  background: var(--brass);
+.team-avatar--photo {
+  background: var(--stone-deep);
 }
 
-.team-card:nth-child(3) .team-avatar {
+.team-avatar--photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-card:last-child .team-avatar {
   background: var(--ink-soft);
 }
 
 .team-card h3 {
   font-family: var(--font-body);
-  font-size: 1.08rem;
+  font-size: 1.02rem;
   margin-bottom: 0.2rem;
 }
 
 .team-role {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--brass-text);
@@ -1006,6 +1215,53 @@ section {
 .team-card p {
   color: var(--ink-soft);
   font-size: 0.9rem;
+}
+
+/* ---------- featured director card ---------- */
+
+.team-featured {
+  display: grid;
+  grid-template-columns: 0.55fr 1.45fr;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  align-items: center;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  margin-bottom: 1.6rem;
+}
+
+.team-featured__media {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 50%;
+  max-width: 260px;
+}
+
+.team-featured__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-featured__body .team-role {
+  margin-bottom: 0.3rem;
+}
+
+.team-featured__body h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.team-featured__body p {
+  color: var(--ink-soft);
+  font-size: 0.96rem;
+  margin-bottom: 0.9rem;
+}
+
+.team-featured__body p:last-child {
+  margin-bottom: 0;
 }
 
 /* ==========================================================================
@@ -1355,8 +1611,20 @@ section {
     grid-template-columns: 1fr;
   }
 
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .about-media .spec-frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .sector-list {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .goals-grid {
+    grid-template-columns: 1fr;
   }
 
   .why-grid {
@@ -1364,8 +1632,17 @@ section {
   }
 
   .team-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.1rem;
+  }
+
+  .team-featured {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .team-featured__media {
+    margin: 0 auto;
   }
 
   .project-grid {
@@ -1424,7 +1701,6 @@ section {
     text-align: left;
   }
 
-  .services-grid,
   .why-grid {
     grid-template-columns: 1fr;
   }

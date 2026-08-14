@@ -5,11 +5,12 @@ A ground-up rebuild of the S K Enterprises marketing site. No Mobirise, no Boots
 ## What's in here
 
 ```
-index.html          Full one-page site: hero, about, services, projects, why us, team, testimonials, contact
-thank-you.html       Redirect target after the contact form is submitted
-assets/css/main.css  Entire design system (colors, type, layout, components)
-assets/js/main.js    Sticky nav, mobile menu, scroll reveal, project filter, testimonial scroller
-assets/images/       Photos used on the site, resized and compressed for the web (18MB → 1.2MB total)
+index.html            Full one-page site: hero, about, mission, goals, services, projects, ongoing, why us, team, testimonials, contact
+thank-you.html         Redirect target after the contact form is submitted
+google-apps-script.gs  Script that sends contact form submissions from your Gmail (see setup below)
+assets/css/main.css    Entire design system (colors, type, layout, components)
+assets/js/main.js      Sticky nav, mobile menu, scroll reveal, project filter, carousels, contact form
+assets/images/         Photos used on the site, resized and compressed for the web
 ```
 
 ## Design
@@ -21,13 +22,28 @@ assets/images/       Photos used on the site, resized and compressed for the web
 
 ## Content
 
-All copy (about, services, why-us, team, testimonials, contact details) is carried over from your original site — nothing invented. Testimonials were lightly cleaned up (emoji removed) to match the more editorial tone; the underlying quotes and names are unchanged.
+All copy (about, mission & vision, goals, services, why-us, team, testimonials, contact details) is sourced from your company profile deck. Team photos and all 38 project photos across the 7 named projects (804 Newa Bhakti Park, Duplex Flat Airoli, Sheth Montana, Clubhouse, B Wing Lobby, Samata Clinic, SBI Office) were extracted directly from that PDF.
 
-Project photos are grouped into a filterable gallery (All / 2 BHK / 3 BHK / 4 BHK / Penthouse / Lobby) instead of five separate near-empty pages — easier to browse, and easier for you to maintain going forward.
+Project photos are grouped into a filterable gallery (All / by project name) instead of separate pages — easier to browse, and easier for you to maintain going forward.
 
-## Contact form
+## Contact form — sends via your Gmail
 
-Unchanged from before — POSTs directly to your existing Salesforce Web-to-Lead endpoint (`orgId 00DgK000005ZWoX`), no JavaScript library required, redirects to `thank-you.html` on submit.
+The form no longer uses Salesforce. It now sends straight from your own Gmail account using a small Google Apps Script, with **Reply-To set to the visitor's email** — so when you hit Reply in Gmail, it goes to them, not back to yourself.
+
+**You need to do a one-time, 5-minute setup before the form will work:**
+
+1. Open `google-apps-script.gs` in this folder — it has full step-by-step instructions in the comments at the top.
+2. Follow those steps at [script.google.com](https://script.google.com) (paste the code, deploy as a Web App, copy the URL it gives you).
+3. Open `assets/js/main.js`, find this line near the top:
+   ```js
+   var CONTACT_FORM_ENDPOINT = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+   ```
+   and paste your Web App URL in place of the placeholder text.
+4. Re-upload the site.
+
+Until step 3 is done, the form will show a friendly "isn't connected yet" message instead of failing silently — so you'll know right away if it still needs setup.
+
+Submissions arrive as a plain email in the Gmail inbox you deployed the script under, with the visitor's name, email, phone, and message.
 
 ## Deploying
 

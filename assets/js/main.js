@@ -1,6 +1,12 @@
 (function () {
   "use strict";
 
+  /* ---------- contact form endpoint ----------
+     Paste your Google Apps Script Web App URL here after deploying it.
+     See google-apps-script.gs and README.md for the 5-minute setup.
+     Until this is filled in, the form will show an error instead of sending. */
+  var CONTACT_FORM_ENDPOINT = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
   /* ---------- sticky header state ---------- */
   var header = document.querySelector(".site-header");
   var onScroll = function () {
@@ -171,9 +177,72 @@
     });
   }
 
+  /* ---------- services carousel controls ---------- */
+  var servicesTrack = document.querySelector(".services-track");
+  var servicesPrev = document.querySelector(".services-prev");
+  var servicesNext = document.querySelector(".services-next");
+  if (servicesTrack && servicesPrev && servicesNext) {
+    var scrollByService = function (dir) {
+      var card = servicesTrack.querySelector(".service-card");
+      var amount = card ? card.getBoundingClientRect().width + 18 : 320;
+      servicesTrack.scrollBy({ left: dir * amount, behavior: "smooth" });
+    };
+    servicesPrev.addEventListener("click", function () {
+      scrollByService(-1);
+    });
+    servicesNext.addEventListener("click", function () {
+      scrollByService(1);
+    });
+  }
+
   /* ---------- current year in footer ---------- */
   var yearEl = document.querySelector("[data-year]");
   if (yearEl) {
     yearEl.textContent = new Date().getFullYear();
+  }
+
+  /* ---------- contact form: send via Google Apps Script (Gmail) ---------- */
+  var contactForm = document.getElementById("contact-form");
+  var formStatus = document.getElementById("form-status");
+  var formSubmit = document.getElementById("form-submit");
+
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var nameField = document.getElementById("cf-name");
+      var emailField = document.getElementById("cf-email");
+
+      if (!nameField.value.trim() || !emailField.value.trim()) {
+        formStatus.textContent = "Please fill in your name and email.";
+        return;
+      }
+
+      if (!CONTACT_FORM_ENDPOINT || CONTACT_FORM_ENDPOINT.indexOf("PASTE_YOUR") === 0) {
+        formStatus.textContent = "Form isn't connected yet — see README.md to finish setup.";
+        return;
+      }
+
+      var originalLabel = formSubmit.textContent;
+      formSubmit.disabled = true;
+      formSubmit.textContent = "Sending...";
+      formStatus.textContent = "Sending your message...";
+
+      var formData = new FormData(contactForm);
+
+      fetch(CONTACT_FORM_ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData,
+      })
+        .then(function () {
+          window.location.href = "thank-you.html";
+        })
+        .catch(function () {
+          formSubmit.disabled = false;
+          formSubmit.textContent = originalLabel;
+          formStatus.textContent = "Something went wrong — please email us directly at skbusiness576@gmail.com.";
+        });
+    });
   }
 })();
