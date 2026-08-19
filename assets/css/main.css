@@ -16,6 +16,7 @@
   --brass: #a9814a;
   --brass-light: #c9a877;
   --brass-text: #7a5a2e;
+  --whatsapp: #2fa84f;
   --teal: #1f5c52;
   --teal-deep: #143b34;
   --line: rgba(33, 29, 26, 0.15);
@@ -26,7 +27,7 @@
   --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --container: 1240px;
+  --container: 1600px;
   --gutter: clamp(1.25rem, 4vw, 3rem);
 }
 
@@ -109,6 +110,25 @@ button {
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 var(--gutter);
+}
+
+/* Desktop/tablet: use ~90% of the viewport instead of a fixed-width
+   column, so the page doesn't leave large empty margins on wide screens.
+   Mobile (below 641px) keeps the padding-based layout untouched. */
+@media (min-width: 641px) {
+  .container {
+    width: 90%;
+    max-width: var(--container);
+    padding: 0;
+  }
+}
+
+@media (min-width: 861px) {
+  .container {
+    width: 90%;
+    max-width: 1600px;
+    padding: 0 var(--gutter);
+  }
 }
 
 /* ---------- eyebrow / mono labels ---------- */
@@ -1412,6 +1432,56 @@ section {
   justify-content: center;
   flex-shrink: 0;
   color: var(--teal);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+a.info-icon {
+  cursor: pointer;
+}
+
+a.info-icon:hover {
+  transform: translateY(-2px);
+  color: var(--paper);
+}
+
+.info-icon--call {
+  color: var(--teal);
+}
+
+a.info-icon--call:hover {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.info-icon--whatsapp {
+  color: var(--whatsapp);
+}
+
+a.info-icon--whatsapp:hover {
+  background: var(--whatsapp);
+  border-color: var(--whatsapp);
+}
+
+.info-icon--email {
+  color: var(--brass-text);
+}
+
+a.info-icon--email:hover {
+  background: var(--brass-text);
+  border-color: var(--brass-text);
+}
+
+.info-icon--address {
+  color: var(--ink-soft);
+}
+
+a.info-icon--address:hover {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+}
+
+.info-icon--hours {
+  color: var(--ink-faint);
 }
 
 .info-label {
