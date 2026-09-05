@@ -313,8 +313,55 @@
     border-color:transparent;
   }
 
-  /* ---------- signature ---------- */
-  .sig-hint{font-size:12px;color:var(--grey);margin-top:6px;font-style:italic;}
+  /* ---------- signature pad ---------- */
+  .sig-box{
+    border:2px dashed var(--line);
+    border-radius:14px;
+    background:#FCFDFC;
+    position:relative;
+    margin-top:10px;
+    touch-action:none;
+  }
+  .sig-box canvas{
+    width:100%;
+    height:180px;
+    display:block;
+    border-radius:12px;
+    cursor:crosshair;
+  }
+  .sig-placeholder{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    color:#B9C2C0;
+    font-size:14px;
+    font-style:italic;
+    pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .sig-toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+  }
+  .sig-toolbar .sig-status{
+    font-size:12.5px;
+    color:var(--grey);
+  }
+  .sig-toolbar .sig-status.ok{color:var(--teal-2); font-weight:600;}
+  .sig-clear{
+    background:none;
+    border:1.5px solid var(--line);
+    color:var(--navy);
+    padding:7px 16px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .sig-clear:hover{border-color:var(--warn); color:var(--warn);}
 
   /* ---------- actions ---------- */
   .actions{
@@ -549,10 +596,19 @@
       <div class="section" data-section>
         <div class="section-title"><div class="num">06</div><h3>Acknowledgement</h3><div class="rule"></div></div>
         <div class="field-grid">
-          <div class="field"><label>Type Full Name to Sign</label><input type="text" id="sigName" placeholder="Your name acts as your e-signature"></div>
+          <div class="field"><label>Full Name</label><input type="text" id="sigName" placeholder="Your name"></div>
           <div class="field"><label>Date</label><input type="date" id="sigDate"></div>
         </div>
-        <p class="sig-hint">By typing your name above, you confirm this feedback reflects your genuine experience.</p>
+        <label style="display:block; font-size:11px; font-weight:700; letter-spacing:1.3px; color:var(--grey); text-transform:uppercase; margin:22px 0 0 0;">Draw Your Signature</label>
+        <div class="sig-box">
+          <canvas id="sigCanvas"></canvas>
+          <span class="sig-placeholder" id="sigPlaceholder">Sign here with mouse or finger</span>
+        </div>
+        <div class="sig-toolbar">
+          <span class="sig-status" id="sigStatus">Not signed yet</span>
+          <button type="button" class="sig-clear" id="sigClear">↺ Clear Signature</button>
+        </div>
+        <p class="sig-hint">By signing above, you confirm this feedback reflects your genuine experience.</p>
       </div>
 
       <div class="actions">
@@ -584,7 +640,16 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/5.1.1/signature_pad.umd.min.js"></script>
 <script>
+let signaturePad = null;
+function hasSignature(){
+  return signaturePad && !signaturePad.isEmpty();
+}
+function getSignatureImage(){
+  return hasSignature() ? signaturePad.toDataURL('image/png') : null;
+}
+
 /* ---------------- animated background blobs ---------------- */
 (function(){
   const canvas = document.getElementById('bgCanvas');
@@ -712,6 +777,7 @@ function updateProgress(){
   });
   total++; if(npsVal!==null) filled++;
   total++; if(consentVal!==null) filled++;
+  total++; if(hasSignature() || (document.getElementById('sigName').value||'').trim()!=='') filled++;
   const pct = Math.round((filled/total)*100);
   document.getElementById('progressNote').textContent = pct+'% complete';
 }
@@ -771,6 +837,7 @@ function collectSummary(){
   lines.push('Likelihood to recommend (0-10): '+(npsVal!==null?npsVal:'-'));
   lines.push('Testimonial consent: '+(consentVal||'-'));
   lines.push('Signed by: '+(document.getElementById('sigName').value||'-')+' on '+(document.getElementById('sigDate').value||'-'));
+  lines.push('Hand-drawn signature: '+(hasSignature() ? 'Captured (see printed/PDF copy)' : 'Not provided'));
   return lines.join('\n');
 }
 
@@ -782,6 +849,12 @@ document.getElementById('submitBtn').addEventListener('click', ()=>{
     nameField.placeholder = 'Please enter your name to continue';
     return;
   }
+  if(!hasSignature() && !(document.getElementById('sigName').value||'').trim()){
+    document.getElementById('sigStatus').textContent = 'Please sign or type your name to confirm';
+    document.getElementById('sigStatus').style.color = '#E4572E';
+    document.getElementById('sigCanvas').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
   document.getElementById('overlay').classList.add('show');
   fireConfetti();
 });
@@ -791,10 +864,69 @@ document.getElementById('emailBtn').addEventListener('click', ()=>{
   const name = document.querySelector('.field input.req').value || 'Client';
   const subject = encodeURIComponent('Client Feedback — '+name+' — S K Enterprises');
   const body = encodeURIComponent(summary);
-  window.location.href = `mailto:vishwakarma8421@gmail.com?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:skbusiness576@gmail.com?subject=${subject}&body=${body}`;
 });
 
 document.getElementById('printBtn').addEventListener('click', ()=> window.print());
+
+/* ---------------- signature pad ---------------- */
+(function(){
+  const canvas = document.getElementById('sigCanvas');
+  const placeholder = document.getElementById('sigPlaceholder');
+  const statusEl = document.getElementById('sigStatus');
+
+  function resizeCanvas(){
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const data = signaturePad && !signaturePad.isEmpty() ? signaturePad.toData() : null;
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext('2d').scale(ratio, ratio);
+    if(signaturePad){
+      signaturePad.clear();
+      if(data) signaturePad.fromData(data);
+    }
+  }
+
+  if(typeof SignaturePad !== 'undefined'){
+    signaturePad = new SignaturePad(canvas, {
+      backgroundColor:'rgba(255,255,255,1)',
+      penColor:'#0D284F',
+      minWidth:1.2,
+      maxWidth:2.6,
+    });
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function refreshStatus(){
+      if(!signaturePad) return;
+      const empty = signaturePad.isEmpty();
+      statusEl.textContent = empty ? 'Not signed yet' : '✓ Signature captured';
+      statusEl.classList.toggle('ok', !empty);
+      statusEl.style.color = '';
+      placeholder.style.opacity = empty ? '1' : '0';
+      updateProgress();
+    }
+
+    signaturePad.addEventListener('beginStroke', ()=>{ placeholder.style.opacity='0'; });
+    signaturePad.addEventListener('endStroke', refreshStatus);
+    // fallback in case the library's own event timing varies across browsers
+    ['pointerup','mouseup','touchend'].forEach(evt=>{
+      canvas.addEventListener(evt, ()=> setTimeout(refreshStatus, 60));
+      document.addEventListener(evt, ()=> setTimeout(refreshStatus, 60), {passive:true});
+    });
+
+    document.getElementById('sigClear').addEventListener('click', ()=>{
+      signaturePad.clear();
+      refreshStatus();
+    });
+  } else {
+    // graceful fallback if the library can't load (e.g. no internet)
+    canvas.style.display='none';
+    placeholder.textContent='Signature pad needs an internet connection — please type your name above instead.';
+    placeholder.style.opacity='1';
+    document.getElementById('sigClear').style.display='none';
+  }
+})();
 </script>
 
 </body>
